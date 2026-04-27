@@ -5,13 +5,14 @@
     .venv/bin/python server.py
 
 访问：http://localhost:7788
+
+数据保存到：second me/📖00-日志/daily/YYYY-MM-DD.md
 """
 
 from __future__ import annotations
 
-import json
 import re
-from datetime import datetime, date
+from datetime import date
 from pathlib import Path
 
 from flask import Flask, jsonify, request, send_from_directory
@@ -21,44 +22,47 @@ app = Flask(__name__, static_folder=".")
 CORS(app)
 
 # ── 路径配置 ──────────────────────────────────────────────────────────────
-VAULT = Path(__file__).parent.parent          # second me/
-JOURNAL_DIR = VAULT / "📖00-日志"
-JOURNAL_DIR.mkdir(exist_ok=True)
+VAULT      = Path(__file__).parent.parent        # second me/
+DAILY_DIR  = VAULT / "📖00-日志" / "daily"
+DAILY_DIR.mkdir(parents=True, exist_ok=True)
 
 
 # ── 工具函数 ──────────────────────────────────────────────────────────────
 
-def get_monthly_file(d: date) -> Path:
-    return JOURNAL_DIR / f"{d.year:04d}-{d.month:02d}.md"
+EMOTION_MAP = {
+    "peaceful": "😌 平静", "happy": "😊 愉悦", "excited": "✨ 兴奋",
+    "grateful": "🌸 感激", "tired": "🌿 疲惫", "anxious": "🌊 焦虑",
+    "sad": "🌧 低落",  "confused": "🌀 迷茫", "focused": "🔥 专注",
+    "hopeful": "🌅 期待",
+}
+EMOTION_RMAP = {v: k for k, v in EMOTION_MAP.items()}
 
 
-def day_heading(d: date) -> str:
-    return f"## {d.month:02d}-{d.day:02d}"
+def daily_file(d: date) -> Path:
+    return DAILY_DIR / f"{d.isoformat()}.md"
 
 
-def build_day_block(d: date, data: dict) -> str:
-    """把前端数据组装成 Markdown 段落。"""
+def build_file(d: date, data: dict) -> str:
+    """把前端数据组装成独立的每日 Markdown 文件。"""
+    weekdays = ["周一","周二","周三","周四","周五","周六","周日"]
+    week = weekdays[d.weekday()]
     lines: list[str] = []
-    heading = day_heading(d)
-    lines.append(heading)
+
+    lines.append(f"# {d.year}年{d.month:02d}月{d.day:02d}日 · {week}")
+    lines.append("")
+    lines.append(f"tags: daily-record")
     lines.append("")
 
     # 情绪
-    emotion_map = {
-        "peaceful": "😌 平静", "happy": "😊 愉悦", "excited": "✨ 兴奋",
-        "grateful": "🌸 感激", "tired": "🌿 疲惫", "anxious": "🌊 焦虑",
-        "sad": "🌧 低落", "confused": "🌀 迷茫", "focused": "🔥 专注",
-        "hopeful": "🌅 期待",
-    }
     emotion = data.get("emotion", "")
     if emotion:
-        lines.append(f"> 今日心情：{emotion_map.get(emotion, emotion)}")
+        lines.append(f"> 今日心情：{EMOTION_MAP.get(emotion, emotion)}")
         lines.append("")
 
     # 今日任务
     tasks = data.get("tasks", [])
     if tasks:
-        lines.append("### 🎯 今日任务")
+        lines.append("## 🎯 今日任务")
         lines.append("")
         for t in tasks:
             check = "x" if t.get("done") else " "
@@ -68,7 +72,7 @@ def build_day_block(d: date, data: dict) -> str:
     # 今天做了什么
     did = (data.get("did") or "").strip()
     if did:
-        lines.append("### 🌙 今天做了什么")
+        lines.append("## 🌙 今天做了什么")
         lines.append("")
         lines.append(did)
         lines.append("")
@@ -76,7 +80,7 @@ def build_day_block(d: date, data: dict) -> str:
     # 今天在想什么
     think = (data.get("think") or "").strip()
     if think:
-        lines.append("### 💭 今天在想什么")
+        lines.append("## 💭 今天在想什么")
         lines.append("")
         lines.append(think)
         lines.append("")
@@ -84,101 +88,43 @@ def build_day_block(d: date, data: dict) -> str:
     # 沉浸写作
     immersive = (data.get("immersive") or "").strip()
     if immersive:
-        lines.append("### ✦ 沉浸写作")
+        lines.append("## ✦ 沉浸写作")
         lines.append("")
         lines.append(immersive)
         lines.append("")
 
-    lines.append("---")
-    lines.append("")
     return "\n".join(lines)
 
 
-def upsert_day(monthly_file: Path, d: date, block: str) -> None:
-    """在月度文件里插入或替换当天的段落。"""
-    heading = day_heading(d)
-
-    if not monthly_file.exists():
-        # 新建月度文件
-        header = (
-            f"# {d.year}年{d.month:02d}月 · 日常记录\n\n"
-            "> 格式随意，持续即价值。\n\n---\n\n"
-        )
-        monthly_file.write_text(header + block, encoding="utf-8")
-        return
-
-    content = monthly_file.read_text(encoding="utf-8")
-
-    # 找到当天 heading 的位置
-    # 匹配 "## MM-DD" 后，直到下一个 "## " 或文件末尾
-    pattern = re.compile(
-        rf"^{re.escape(heading)}[ \t]*\n.*?(?=^## |\Z)",
-        re.MULTILINE | re.DOTALL,
-    )
-
-    if pattern.search(content):
-        # 替换已有段落
-        new_content = pattern.sub(block, content)
-    else:
-        # 追加到文件开头（最新的在最前面，与现有格式一致）
-        # 找到第一个 ## 之前的位置插入
-        first_entry = re.search(r"^## \d{2}-\d{2}", content, re.MULTILINE)
-        if first_entry:
-            insert_pos = first_entry.start()
-            new_content = content[:insert_pos] + block + content[insert_pos:]
-        else:
-            new_content = content + block
-
-    monthly_file.write_text(new_content, encoding="utf-8")
-
-
-def load_day(monthly_file: Path, d: date) -> dict:
-    """从月度文件解析当天的数据，返回给前端。"""
-    if not monthly_file.exists():
+def parse_file(d: date) -> dict:
+    """从每日文件解析数据，返回给前端。"""
+    f = daily_file(d)
+    if not f.exists():
         return {}
 
-    content = monthly_file.read_text(encoding="utf-8")
-    heading = day_heading(d)
-
-    pattern = re.compile(
-        rf"^{re.escape(heading)}[ \t]*\n(.*?)(?=^## |\Z)",
-        re.MULTILINE | re.DOTALL,
-    )
-    m = pattern.search(content)
-    if not m:
-        return {}
-
-    block = m.group(1)
+    content = f.read_text(encoding="utf-8")
     result: dict = {"tasks": [], "did": "", "think": "", "emotion": "", "immersive": ""}
 
-    # 解析情绪
-    emo_m = re.search(r"> 今日心情：(.+)", block)
+    # 情绪
+    emo_m = re.search(r"> 今日心情：(.+)", content)
     if emo_m:
-        emo_text = emo_m.group(1).strip()
-        emotion_rmap = {
-            "😌 平静": "peaceful", "😊 愉悦": "happy", "✨ 兴奋": "excited",
-            "🌸 感激": "grateful", "🌿 疲惫": "tired", "🌊 焦虑": "anxious",
-            "🌧 低落": "sad", "🌀 迷茫": "confused", "🔥 专注": "focused",
-            "🌅 期待": "hopeful",
-        }
-        result["emotion"] = emotion_rmap.get(emo_text, "")
+        result["emotion"] = EMOTION_RMAP.get(emo_m.group(1).strip(), "")
 
-    # 解析任务
-    task_section = re.search(r"### 🎯 今日任务\n\n(.*?)(?=###|\Z)", block, re.DOTALL)
-    if task_section:
-        for line in task_section.group(1).splitlines():
+    # 任务
+    task_sec = re.search(r"## 🎯 今日任务\n\n(.*?)(?=^##|\Z)", content, re.DOTALL | re.MULTILINE)
+    if task_sec:
+        for line in task_sec.group(1).splitlines():
             tm = re.match(r"- \[( |x)\] (.+)", line)
             if tm:
                 result["tasks"].append({"done": tm.group(1) == "x", "text": tm.group(2)})
 
-    # 解析各文本段
-    def extract_section(label: str) -> str:
-        sec = re.search(rf"### {re.escape(label)}\n\n(.*?)(?=###|---|\Z)", block, re.DOTALL)
+    def extract(label: str) -> str:
+        sec = re.search(rf"## {re.escape(label)}\n\n(.*?)(?=^##|^tags:|\Z)", content, re.DOTALL | re.MULTILINE)
         return sec.group(1).strip() if sec else ""
 
-    result["did"]       = extract_section("🌙 今天做了什么")
-    result["think"]     = extract_section("💭 今天在想什么")
-    result["immersive"] = extract_section("✦ 沉浸写作")
+    result["did"]       = extract("🌙 今天做了什么")
+    result["think"]     = extract("💭 今天在想什么")
+    result["immersive"] = extract("✦ 沉浸写作")
 
     return result
 
@@ -203,9 +149,7 @@ def api_load():
     except ValueError:
         return jsonify({"error": "invalid date"}), 400
 
-    monthly_file = get_monthly_file(d)
-    data = load_day(monthly_file, d)
-    return jsonify({"ok": True, "data": data})
+    return jsonify({"ok": True, "data": parse_file(d)})
 
 
 @app.post("/api/save")
@@ -218,15 +162,15 @@ def api_save():
     except ValueError:
         return jsonify({"error": "invalid date"}), 400
 
-    block = build_day_block(d, payload)
-    monthly_file = get_monthly_file(d)
-    upsert_day(monthly_file, d, block)
+    f = daily_file(d)
+    f.write_text(build_file(d, payload), encoding="utf-8")
 
-    return jsonify({"ok": True, "file": str(monthly_file.relative_to(VAULT))})
+    rel = str(f.relative_to(VAULT))
+    return jsonify({"ok": True, "file": rel})
 
 
 if __name__ == "__main__":
-    print(f"📓 Vault: {VAULT}")
-    print(f"📁 Journal dir: {JOURNAL_DIR}")
-    print(f"🌐 Open: http://localhost:7788")
+    print(f"📓 Vault:     {VAULT}")
+    print(f"📁 Daily dir: {DAILY_DIR}")
+    print(f"🌐 Open:      http://localhost:7788")
     app.run(port=7788, debug=False)

@@ -76,6 +76,281 @@ body {
   align-items: baseline;
   margin-bottom: 10px;
 }
+
+/* ── Calendar button ── */
+.cal-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--gray2);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  font-family: 'HuiwenMincho', 'Noto Serif SC', serif;
+  transition: color 0.15s;
+}
+.cal-btn:hover { color: var(--black); }
+
+/* ── Calendar overlay ── */
+.cal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+}
+.cal-overlay.open { display: block; }
+.cal-backdrop {
+  position: absolute;
+  inset: 0;
+}
+.cal-popup {
+  position: absolute;
+  top: 56px;
+  right: 16px;
+  width: 280px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  overflow: hidden;
+}
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.cal-month-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  font-family: 'HuiwenMincho', 'Noto Serif SC', serif;
+}
+.cal-nav {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gray2);
+  font-size: 16px;
+  padding: 2px 6px;
+  transition: color 0.15s;
+  line-height: 1;
+}
+.cal-nav:hover { color: var(--black); }
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 8px;
+  gap: 2px;
+}
+.cal-weekday {
+  text-align: center;
+  font-size: 10px;
+  color: var(--gray2);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 4px 0;
+}
+.cal-day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: default;
+  font-size: 12px;
+  color: var(--gray2);
+  position: relative;
+  gap: 2px;
+}
+.cal-day.has-record {
+  cursor: pointer;
+  color: var(--black);
+  font-weight: 500;
+}
+.cal-day.has-record:hover { background: var(--cream2); }
+.cal-day.is-today {
+  background: var(--black);
+  color: white !important;
+  font-weight: 700;
+}
+.cal-day.is-today:hover { background: var(--green); }
+.cal-day.other-month { opacity: 0.25; cursor: default; }
+.cal-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+}
+.cal-day.is-today .cal-dot { background: white; }
+
+/* ── History section ── */
+.history-divider {
+  padding: 16px 20px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.history-divider-date {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--gray2);
+  text-transform: uppercase;
+  font-family: 'HuiwenMincho', 'Noto Serif SC', serif;
+  white-space: nowrap;
+}
+.history-divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.history-card {
+  border-bottom: 1px solid var(--border);
+  background: var(--white);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.history-card:hover { background: var(--green); }
+.history-card:hover .entry-date,
+.history-card:hover .entry-time,
+.history-card:hover .entry-sep { color: rgba(255,255,255,0.55); }
+.history-card:hover .history-title { color: #fff; }
+.history-card:hover .history-excerpt { color: rgba(255,255,255,0.8); }
+.history-card:hover .tag-outline {
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.9);
+  border-color: transparent;
+}
+.history-inner { padding: 16px 20px; }
+.history-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.history-title {
+  font-family: 'HuiwenMincho', 'Noto Serif SC', serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--black);
+  margin-bottom: 5px;
+  line-height: 1.3;
+  transition: color 0.2s;
+}
+.history-excerpt {
+  font-size: 13px;
+  color: var(--gray1);
+  line-height: 1.6;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  transition: color 0.2s;
+}
+.load-more-btn {
+  display: block;
+  width: 100%;
+  padding: 18px;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--gray2);
+  cursor: pointer;
+  text-transform: uppercase;
+  font-family: 'HuiwenMincho', 'Noto Serif SC', serif;
+  transition: all 0.15s;
+}
+.load-more-btn:hover { color: var(--black); background: var(--cream); }
+
+/* ── Day detail modal ── */
+.day-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: var(--cream);
+  flex-direction: column;
+  max-width: 480px;
+  margin: 0 auto;
+  overflow-y: auto;
+}
+.day-modal.open { display: flex; }
+.day-modal-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--cream);
+  z-index: 2;
+  flex-shrink: 0;
+}
+.day-modal-title {
+  font-family: 'HuiwenMincho', 'Noto Serif SC', serif;
+  font-size: 15px;
+  font-weight: 500;
+}
+.day-modal-close {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: 'HuiwenMincho', 'Noto Serif SC', serif;
+  transition: all 0.15s;
+}
+.day-modal-close:hover { border-color: var(--black); color: var(--black); }
+.day-modal-body { padding: 24px 20px; flex: 1; }
+.day-modal-section { margin-bottom: 28px; }
+.day-modal-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray2);
+  margin-bottom: 10px;
+  font-family: 'HuiwenMincho', 'Noto Serif SC', serif;
+}
+.day-modal-text {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--black);
+  white-space: pre-wrap;
+}
+.day-modal-task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+.day-modal-check {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.day-modal-check.done {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+}
 .site-header-top .label { color: var(--gray2); }
 .site-title {
   font-family: 'HuiwenMincho', 'Noto Serif SC', 'STSong', serif;
@@ -728,11 +1003,33 @@ body {
 <!-- ── Main ── -->
 <div id="mainApp">
 
+  <!-- Calendar overlay -->
+  <div class="cal-overlay" id="calOverlay">
+    <div class="cal-backdrop" onclick="closeCal()"></div>
+    <div class="cal-popup">
+      <div class="cal-header">
+        <button class="cal-nav" onclick="navCal(-1)">‹</button>
+        <span class="cal-month-label" id="calMonthLabel"></span>
+        <button class="cal-nav" onclick="navCal(1)">›</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+  </div>
+
+  <!-- Day detail modal -->
+  <div class="day-modal" id="dayModal">
+    <div class="day-modal-top">
+      <span class="day-modal-title" id="dayModalTitle"></span>
+      <button class="day-modal-close" onclick="closeDayModal()">关闭</button>
+    </div>
+    <div class="day-modal-body" id="dayModalBody"></div>
+  </div>
+
   <!-- Site Header -->
   <div class="site-header">
     <div class="site-header-top">
       <span class="label">ARCHIVE — <span id="headerYear"></span></span>
-      <span class="label">VOL. <span id="headerVol"></span></span>
+      <button class="cal-btn" onclick="openCal()">📅 <span id="calBtnLabel"></span></button>
     </div>
     <div class="site-title serif">个人记录</div>
     <div class="greeting-bar" id="greetingBar"></div>
@@ -748,8 +1045,11 @@ body {
 
   <!-- ── FEED Tab ── -->
   <div class="feed" id="tabFeed">
-    <!-- All cards rendered by JS (including immersive) -->
+    <!-- Today's cards -->
     <div id="feedCards"></div>
+    <!-- History -->
+    <div id="historyFeed"></div>
+    <button class="load-more-btn" id="loadMoreBtn" onclick="loadMoreHistory()" style="display:none">↓ 加载更多</button>
   </div>
 
   <!-- ── TASKS Tab ── -->
@@ -925,11 +1225,12 @@ async function saveToServer() {
     });
     const json = await res.json();
     if (json.ok) {
-      // 静默成功，不打扰用户
       _lastSavedPath = json.file;
+      recordDate(todayISO());   // 标记今天有记录
     }
   } catch(e) {
     console.warn('保存到文件失败，已保存到 localStorage', e);
+    recordDate(todayISO());
   }
 }
 let _lastSavedPath = '';
@@ -1251,7 +1552,11 @@ function onImmInput() {
 // ── Keyboard ───────────────────────────────────────────
 document.addEventListener('keydown', e => {
   const overlay = document.getElementById('immersiveOverlay');
-  if (e.key === 'Escape' && overlay.classList.contains('open')) closeImmersive();
+  if (e.key === 'Escape') {
+    if (overlay.classList.contains('open')) closeImmersive();
+    else if (document.getElementById('dayModal').classList.contains('open')) closeDayModal();
+    else if (document.getElementById('calOverlay').classList.contains('open')) closeCal();
+  }
   if ((e.metaKey || e.ctrlKey) && e.key === 's') {
     e.preventDefault();
     if (overlay.classList.contains('open')) saveImmersive();
@@ -1267,14 +1572,261 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2000);
 }
 
+// ── Calendar ───────────────────────────────────────────
+let _calDate = new Date();   // month being viewed
+let _recordedDates = new Set();
+
+async function loadRecordedDates() {
+  try {
+    const res = await fetch(`${API}/api/list`);
+    const json = await res.json();
+    if (json.ok) _recordedDates = new Set(json.dates);
+  } catch {
+    // GitHub Pages: restore from localStorage
+    const stored = localStorage.getItem('secondme_recorded_dates');
+    if (stored) _recordedDates = new Set(JSON.parse(stored));
+  }
+}
+
+function recordDate(iso) {
+  _recordedDates.add(iso);
+  try {
+    localStorage.setItem('secondme_recorded_dates', JSON.stringify([..._recordedDates]));
+  } catch {}
+}
+
+function openCal() {
+  _calDate = new Date();
+  renderCalendar();
+  document.getElementById('calOverlay').classList.add('open');
+}
+function closeCal() {
+  document.getElementById('calOverlay').classList.remove('open');
+}
+function navCal(dir) {
+  _calDate.setMonth(_calDate.getMonth() + dir);
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const y = _calDate.getFullYear(), m = _calDate.getMonth();
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('calMonthLabel').textContent = `${months[m]} ${y}`;
+  document.getElementById('calBtnLabel').textContent = `${months[now.getMonth()]} ${now.getFullYear()}`;
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+
+  // Weekday headers (Mon first)
+  ['一','二','三','四','五','六','日'].forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'cal-weekday';
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+
+  const firstDay = new Date(y, m, 1);
+  // Monday = 0 offset
+  let startOffset = (firstDay.getDay() + 6) % 7;
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  const todayStr = todayISO();
+
+  // Empty cells before first day
+  for (let i = 0; i < startOffset; i++) {
+    const el = document.createElement('div');
+    el.className = 'cal-day other-month';
+    grid.appendChild(el);
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const iso = `${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const el = document.createElement('div');
+    el.className = 'cal-day';
+
+    const numEl = document.createElement('span');
+    numEl.textContent = day;
+    el.appendChild(numEl);
+
+    if (iso === todayStr) el.classList.add('is-today');
+    if (_recordedDates.has(iso)) {
+      el.classList.add('has-record');
+      const dot = document.createElement('div');
+      dot.className = 'cal-dot';
+      el.appendChild(dot);
+      el.onclick = () => { closeCal(); jumpToDate(iso); };
+    }
+
+    grid.appendChild(el);
+  }
+}
+
+// ── History feed ───────────────────────────────────────
+const HISTORY_PAGE = 5;
+let _historyDates = [];   // past dates (excludes today), sorted desc
+let _historyLoaded = 0;
+
+const EMOTION_LABELS = {
+  peaceful:'😌 平静', happy:'😊 愉悦', excited:'✨ 兴奋', grateful:'🌸 感激',
+  tired:'🌿 疲惫', anxious:'🌊 焦虑', sad:'🌧 低落', confused:'🌀 迷茫',
+  focused:'🔥 专注', hopeful:'🌅 期待',
+};
+
+async function initHistory() {
+  await loadRecordedDates();
+  _historyDates = [..._recordedDates]
+    .filter(d => d !== todayISO())
+    .sort((a, b) => b.localeCompare(a));
+  _historyLoaded = 0;
+  document.getElementById('historyFeed').innerHTML = '';
+  loadMoreHistory();
+}
+
+function loadMoreHistory() {
+  const container = document.getElementById('historyFeed');
+  const batch = _historyDates.slice(_historyLoaded, _historyLoaded + HISTORY_PAGE);
+
+  batch.forEach(iso => {
+    const d = new Date(iso + 'T00:00:00');
+    const weekdays = ['周日','周一','周二','周三','周四','周五','周六'];
+    const label = `${d.getMonth()+1}月${d.getDate()}日 · ${weekdays[d.getDay()]}`;
+
+    // Date divider
+    const divider = document.createElement('div');
+    divider.className = 'history-divider';
+    divider.id = `hist-${iso}`;
+    divider.innerHTML = `<span class="history-divider-date">${label}</span><div class="history-divider-line"></div>`;
+    container.appendChild(divider);
+
+    // Summary card (load data lazily from localStorage or show loading)
+    const card = document.createElement('div');
+    card.className = 'history-card';
+    card.innerHTML = `<div class="history-inner">
+      <div class="history-title">加载中…</div>
+    </div>`;
+    card.onclick = () => openDayModal(iso);
+    container.appendChild(card);
+
+    // Load card data
+    loadHistoryCard(iso, card);
+  });
+
+  _historyLoaded += batch.length;
+
+  const btn = document.getElementById('loadMoreBtn');
+  btn.style.display = _historyLoaded < _historyDates.length ? 'block' : 'none';
+}
+
+async function loadHistoryCard(iso, card) {
+  let data = {};
+  try {
+    const res = await fetch(`${API}/api/load?date=${iso}`);
+    const json = await res.json();
+    if (json.ok) data = json.data;
+  } catch {
+    const cached = localStorage.getItem(`secondme_v2_${new Date(iso+'T00:00:00').toDateString()}`);
+    if (cached) data = JSON.parse(cached);
+  }
+
+  const emoLabel = EMOTION_LABELS[data.emotion] || '';
+  const excerpt = data.did || data.think || data.immersive || '无记录内容';
+  const taskCount = (data.tasks || []).length;
+  const doneCount = (data.tasks || []).filter(t => t.done).length;
+
+  card.innerHTML = `
+    <div class="history-inner">
+      <div class="history-meta">
+        ${emoLabel ? `<span class="tag tag-outline">${emoLabel}</span>` : ''}
+        ${taskCount ? `<span class="tag tag-outline">${doneCount}/${taskCount} Done</span>` : ''}
+      </div>
+      <div class="history-title">${data.did ? '今天做了什么' : data.think ? '今天在想什么' : '记录'}</div>
+      <div class="history-excerpt">${excerpt}</div>
+    </div>
+  `;
+}
+
+function jumpToDate(iso) {
+  // If loaded in history, scroll to it
+  const el = document.getElementById(`hist-${iso}`);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    // Load more until found or open modal
+    openDayModal(iso);
+  }
+}
+
+// ── Day modal ──────────────────────────────────────────
+async function openDayModal(iso) {
+  const d = new Date(iso + 'T00:00:00');
+  const weekdays = ['周日','周一','周二','周三','周四','周五','周六'];
+  const label = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 · ${weekdays[d.getDay()]}`;
+  document.getElementById('dayModalTitle').textContent = label;
+  document.getElementById('dayModalBody').innerHTML = '<div style="color:var(--gray2);font-size:13px;">加载中…</div>';
+  document.getElementById('dayModal').classList.add('open');
+
+  let data = {};
+  try {
+    const res = await fetch(`${API}/api/load?date=${iso}`);
+    const json = await res.json();
+    if (json.ok) data = json.data;
+  } catch {
+    const cached = localStorage.getItem(`secondme_v2_${new Date(iso+'T00:00:00').toDateString()}`);
+    if (cached) data = JSON.parse(cached);
+  }
+
+  const emoLabel = EMOTION_LABELS[data.emotion] || '';
+  const tasks = data.tasks || [];
+  let html = '';
+
+  if (emoLabel) html += `<div class="day-modal-section">
+    <div class="day-modal-section-title">今日心情</div>
+    <div class="day-modal-text">${emoLabel}</div>
+  </div>`;
+
+  if (tasks.length) {
+    const taskHTML = tasks.map(t => `
+      <div class="day-modal-task">
+        <div class="day-modal-check ${t.done ? 'done' : ''}">${t.done ? '✓' : ''}</div>
+        <span style="${t.done ? 'text-decoration:line-through;color:var(--gray2)' : ''}">${t.text}</span>
+      </div>`).join('');
+    html += `<div class="day-modal-section">
+      <div class="day-modal-section-title">今日任务</div>
+      ${taskHTML}
+    </div>`;
+  }
+
+  if (data.did) html += `<div class="day-modal-section">
+    <div class="day-modal-section-title">今天做了什么</div>
+    <div class="day-modal-text">${data.did}</div>
+  </div>`;
+
+  if (data.think) html += `<div class="day-modal-section">
+    <div class="day-modal-section-title">今天在想什么</div>
+    <div class="day-modal-text">${data.think}</div>
+  </div>`;
+
+  if (data.immersive) html += `<div class="day-modal-section">
+    <div class="day-modal-section-title">沉浸写作</div>
+    <div class="day-modal-text">${data.immersive}</div>
+  </div>`;
+
+  if (!html) html = '<div style="color:var(--gray2);font-size:13px;">这天没有记录内容。</div>';
+  document.getElementById('dayModalBody').innerHTML = html;
+}
+
+function closeDayModal() {
+  document.getElementById('dayModal').classList.remove('open');
+}
+
 // ── Init ───────────────────────────────────────────────
 (async function init() {
-  await loadFromServer();   // 先从服务器（文件）加载
+  await loadFromServer();
   renderTasks();
   document.getElementById('didTextarea').value   = D.did;
   document.getElementById('thinkTextarea').value = D.think;
   restoreEmotion();
   renderFeed();
+  initHistory();   // 加载历史记录（不阻塞今天的渲染）
 })();
 </script>
 </body>

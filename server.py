@@ -140,6 +140,18 @@ def static_files(filename):
     return send_from_directory(".", filename)
 
 
+@app.get("/api/list")
+def api_list():
+    """GET /api/list  → 所有有记录的日期（ISO 格式，降序）"""
+    import re as _re
+    dates = sorted(
+        [f.stem for f in DAILY_DIR.glob("*.md")
+         if _re.match(r"\d{4}-\d{2}-\d{2}", f.stem)],
+        reverse=True,
+    )
+    return jsonify({"ok": True, "dates": dates})
+
+
 @app.get("/api/load")
 def api_load():
     """GET /api/load?date=2026-04-27"""

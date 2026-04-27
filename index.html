@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>个人记录</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: 'HuiwenMincho';
+    src: url('https://cdn.jsdelivr.net/gh/takushun-wu/HuiwenFonts@main/fonts/HuiwenMincho-Regular.woff2') format('woff2'),
+         url('https://cdn.jsdelivr.net/gh/takushun-wu/HuiwenFonts@main/fonts/HuiwenMincho-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+</style>
+<style>
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+button, input, select, textarea {
+  font-family: 'HuiwenMincho', 'Noto Serif SC', 'STSong', serif;
+}
+
+:root {
+  --cream:   #f0ebe2;
+  --cream2:  #e8e2d7;
+  --white:   #faf8f5;
+  --green:   #2e7d4f;
+  --green-d: #1f5c39;
+  --black:   #111111;
+  --gray1:   #444444;
+  --gray2:   #888888;
+  --gray3:   #bbb;
+  --border:  #d8d0c4;
+  --red:     #c0392b;
+  --blue:    #2980b9;
+  --radius:  4px;
+}
+
+html { background: var(--cream); }
+
+body {
+  background: var(--cream);
+  color: var(--black);
+  font-family: 'HuiwenMincho', 'Noto Serif SC', 'STSong', 'SimSun', serif;
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  padding-bottom: 88px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Typography ── */
+.serif { font-family: 'HuiwenMincho', 'Noto Serif SC', 'STSong', serif; }
+.mono  { font-family: 'SF Mono', 'Courier New', monospace; }
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray2);
+  font-family: 'HuiwenMincho', 'Noto Serif SC', 'STSong', serif;
+}
+
+/* ── Header ── */
+.site-header {
+  padding: 20px 20px 0;
+  border-bottom: 2px solid var(--black);
+}
+.site-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+.site-header-top .label { color: var(--gray2); }
+.site-title {
+  font-family: 'HuiwenMincho', 'Noto Serif SC', 'STSong', serif;
+  font-size: 42px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  margin-bottom: 18px;
+}
+.greeting-bar {
+  font-size: 12px;
+  color: var(--gray2);
+  letter-spacing: 0.05em;
+  padding-bottom: 14px;
+}
+
+/* ── Tab Nav ── */
+.tab-nav {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--cream);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tab-nav::-webkit-scrollbar { display: none; }
+.tab-btn {
+  flex-shrink: 0;
+  padding: 12px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'HuiwenMincho', 'Noto Serif SC', 'STSong', serif;
+  color: var(--gray2);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.02em;
+  margin-bottom: -1px;
+}
+.tab-btn.active {
+  color: var(--black);
+  border-bottom-color: var(--black);
+}
+.tab-btn:hover { color: var(--black); }
+
+/* ── Feed ── */
+.feed { padding: 0; }
+
+/* ── Entry Card ── */
+.entry-card {
+  border-bottom: 1px solid var(--border);
+  background: var(--white);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  position: relative;
+}
+.entry-card:hover { background: var(--green); }
+.entry-card:hover .entry-date,
+.entry-card:hover .entry-time,
+.entry-card:hover .entry-sep { color: rgba(255,255,255,0.55); }
+.entry-card:hover .entry-title { color: #fff; }
+.entry-card:hover .entry-excerpt { color: rgba(255,255,255,0.8); }
+.entry-card:hover .tag-outline {
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.9);
+  border-color: transparent;
+}
+
+.entry-card-inner { padding: 20px 20px 14px; }
+.entry-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.entry-date { font-size: 11px; letter-spacing: 0.08em; color: var(--gray2); font-weight: 500; transition: color 0.2s; }
+.entry-sep  { color: var(--gray3); font-size: 11px; transition: color 0.2s; }
+.entry-time { font-size: 11px; color: var(--gray2); transition: color 0.2s; }
+.entry-body { width: 100%; }
+.entry-title {
+  font-family: 'HuiwenMincho', 'Noto Serif SC', 'STSong', serif;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.3;
+  margin-bottom: 8px;
+  color: var(--black);
+  transition: color 0.2s;
+}
+.entry-excerpt {
+  font-size: 13px;
+  color: var(--gray1);
+  line-height: 1.7;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.2s;
+}
+.entry-thumb { display: none; }
+.entry-tags {
+  padding: 0 20px 14px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+  border-radius: 2px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+.tag-green { background: var(--green); color: white; }
+.tag-outline { border: 1px solid var(--border); color: var(--gray2); background: transparent; }
+.tag-emotion { background: var(--cream2); color: var(--gray1); }
+
+/* ── Section divider ── */
+.section-label {
+  padding: 20px 20px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.section-label-text {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gray2);
+}
+.section-label-line { flex: 1; height: 1px; background: var(--border); }
+
+/* ── Write Panel (今日记录 form) ── */
+.write-panel {
+  display: none;
+  padding: 20px;
+}
+.write-panel.active { display: block; }
+
+/* Task section */
+.write-section { margin-bottom: 28px; }
+.write-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.write-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--black);
+}
+.write-section-action {
+  font-size: 11px;
+  color: var(--green);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+/* Task list */
+.task-add-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.task-input-field {
+  flex: 1;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 9px 12px;
+  font-size: 14px;
+  color: var(--black);
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.18s;
+}
+.task-input-field::placeholder { color: var(--gray3); }
+.task-input-field:focus { border-color: var(--black); }
+.btn-add {
+  background: var(--black);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.btn-add:hover { background: var(--green); }
+
+.task-items { display: flex; flex-direction: column; gap: 1px; }
+.task-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 4px;
+}
+.task-row:hover .task-del { opacity: 1; }
+.task-check-box {
+  width: 16px; height: 16px;
+  border: 2px solid var(--gray3);
+  border-radius: 2px;
+  flex-shrink: 0;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.18s;
+  background: transparent;
+}
+.task-check-box.done {
+  background: var(--green);
+  border-color: var(--green);
+}
+.task-check-box.done::after {
+  content: '✓';
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+}
+.task-label {
+  flex: 1;
+  font-size: 14px;
+  color: var(--black);
+  outline: none;
+  line-height: 1.4;
+}
+.task-label.done { text-decoration: line-through; color: var(--gray3); }
+.task-del {
+  opacity: 0;
+  background: none;
+  border: none;
+  color: var(--gray3);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  transition: color 0.15s, opacity 0.15s;
+  padding: 0 2px;
+}
+.task-del:hover { color: var(--red); }
+.task-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--gray2);
+  letter-spacing: 0.05em;
+}
+.task-bar { flex: 1; height: 2px; background: var(--border); border-radius: 1px; overflow: hidden; }
+.task-bar-fill { height: 100%; background: var(--green); border-radius: 1px; transition: width 0.35s; }
+
+/* Textarea */
+.write-textarea {
+  width: 100%;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  font-size: 14px;
+  color: var(--black);
+  line-height: 1.75;
+  resize: vertical;
+  min-height: 110px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.18s;
+}
+.write-textarea::placeholder { color: var(--gray3); }
+.write-textarea:focus { border-color: var(--black); }
+
+/* Emotion pills */
+.emotion-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.emo-btn {
+  display: flex; align-items: center; gap: 4px;
+  padding: 6px 12px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--white);
+  color: var(--gray1);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.emo-btn:hover { border-color: var(--black); color: var(--black); }
+.emo-btn.active {
+  background: var(--black);
+  border-color: var(--black);
+  color: var(--white);
+}
+.emo-btn.active.green-emo { background: var(--green); border-color: var(--green); }
+.emo-note {
+  font-size: 12px;
+  color: var(--gray2);
+  font-style: italic;
+  min-height: 16px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+/* Save bar */
+.save-bar {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 9px 18px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: var(--gray1);
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.btn-outline:hover { border-color: var(--black); color: var(--black); }
+.btn-solid {
+  background: var(--black);
+  border: 1px solid var(--black);
+  border-radius: var(--radius);
+  padding: 9px 18px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: white;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.btn-solid:hover { background: var(--green); border-color: var(--green); }
+
+/* ── Immersive Overlay ── */
+.immersive-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--cream);
+  flex-direction: column;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.immersive-overlay.open { display: flex; }
+.imm-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.imm-logo {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--black);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.imm-logo-dot {
+  width: 6px; height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+.imm-actions { display: flex; gap: 8px; align-items: center; }
+.imm-count { font-size: 11px; color: var(--gray2); letter-spacing: 0.05em; }
+.imm-btn {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.imm-btn-close {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--gray2);
+}
+.imm-btn-close:hover { border-color: var(--black); color: var(--black); }
+.imm-btn-save {
+  background: var(--green);
+  border: 1px solid var(--green);
+  color: white;
+}
+.imm-btn-save:hover { background: var(--green-d); border-color: var(--green-d); }
+
+.imm-meta {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.imm-date-tag {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--gray2);
+}
+.imm-sep { color: var(--gray3); }
+.imm-tone {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 5px 10px;
+  font-size: 12px;
+  color: var(--gray1);
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.imm-tone:focus { border-color: var(--black); }
+
+.imm-prompt {
+  margin: 0 20px 0;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--gray2);
+  font-style: italic;
+  line-height: 1.6;
+  flex-shrink: 0;
+}
+
+.imm-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 20px;
+}
+.imm-textarea {
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'HuiwenMincho', 'Noto Serif SC', 'STSong', serif;
+  font-size: 19px;
+  line-height: 1.9;
+  color: var(--black);
+  resize: none;
+  caret-color: var(--green);
+}
+.imm-textarea::placeholder { color: var(--gray3); }
+
+.imm-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.imm-companion {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--gray2);
+  letter-spacing: 0.05em;
+}
+.imm-shortcut { font-size: 11px; color: var(--gray3); }
+
+/* ── Bottom Nav ── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 0 env(safe-area-inset-bottom, 0);
+  height: 64px;
+  z-index: 50;
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  color: var(--gray3);
+  transition: color 0.15s;
+  font-family: inherit;
+}
+.nav-item.active { color: var(--black); }
+.nav-item:hover { color: var(--black); }
+.nav-icon {
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+}
+.nav-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: 'HuiwenMincho', 'Noto Serif SC', 'STSong', serif;
+}
+.nav-item.active .nav-label { color: var(--black); }
+
+.nav-center {
+  width: 46px; height: 46px;
+  background: var(--black);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  border: none;
+  color: white;
+  font-size: 22px;
+  line-height: 1;
+  transition: background 0.15s, transform 0.15s;
+  margin-bottom: 8px;
+}
+.nav-center:hover { background: var(--green); transform: scale(1.08); }
+.nav-center.writing { background: var(--green); transform: rotate(45deg); }
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(30px);
+  background: var(--black);
+  color: white;
+  padding: 10px 22px;
+  border-radius: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  pointer-events: none;
+  z-index: 200;
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ── Immersive Writing Overlay ── -->
+<div class="immersive-overlay" id="immersiveOverlay">
+  <div class="imm-topbar">
+    <div class="imm-logo">
+      <div class="imm-logo-dot"></div>
+      沉浸写作
+    </div>
+    <div class="imm-actions">
+      <span class="imm-count" id="immCount">0 字</span>
+      <button class="imm-btn imm-btn-save" onclick="saveImmersive()">保存</button>
+      <button class="imm-btn imm-btn-close" onclick="closeImmersive()">退出</button>
+    </div>
+  </div>
+  <div class="imm-meta">
+    <span class="imm-date-tag" id="immDateTag"></span>
+    <span class="imm-sep">—</span>
+    <select class="imm-tone" id="immTone" onchange="updatePrompt()">
+      <option value="free">自由书写</option>
+      <option value="reflect">今日复盘</option>
+      <option value="grateful">感恩练习</option>
+      <option value="letter">给未来的信</option>
+      <option value="stream">意识流</option>
+    </select>
+  </div>
+  <div class="imm-prompt" id="immPrompt">不需要完美，只需要真实。让文字带你走。</div>
+  <div class="imm-body">
+    <textarea
+      class="imm-textarea"
+      id="immTextarea"
+      placeholder="从这里开始……"
+      oninput="onImmInput()"
+    ></textarea>
+  </div>
+  <div class="imm-footer">
+    <div class="imm-companion">
+      <div class="imm-logo-dot"></div>
+      与你同在
+    </div>
+    <span class="imm-shortcut">Esc 退出 · ⌘S 保存</span>
+  </div>
+</div>
+
+<!-- ── Main ── -->
+<div id="mainApp">
+
+  <!-- Site Header -->
+  <div class="site-header">
+    <div class="site-header-top">
+      <span class="label">ARCHIVE — <span id="headerYear"></span></span>
+      <span class="label">VOL. <span id="headerVol"></span></span>
+    </div>
+    <div class="site-title serif">个人记录</div>
+    <div class="greeting-bar" id="greetingBar"></div>
+  </div>
+
+  <!-- Tab Nav -->
+  <div class="tab-nav" id="tabNav">
+    <button class="tab-btn active" data-tab="feed" onclick="switchTab('feed', this)">全部记录</button>
+    <button class="tab-btn" data-tab="tasks" onclick="switchTab('tasks', this)">今日任务</button>
+    <button class="tab-btn" data-tab="journal" onclick="switchTab('journal', this)">日记</button>
+    <button class="tab-btn" data-tab="thoughts" onclick="switchTab('thoughts', this)">碎碎念</button>
+  </div>
+
+  <!-- ── FEED Tab ── -->
+  <div class="feed" id="tabFeed">
+    <!-- All cards rendered by JS (including immersive) -->
+    <div id="feedCards"></div>
+  </div>
+
+  <!-- ── TASKS Tab ── -->
+  <div class="write-panel" id="tabTasks">
+    <div class="write-section">
+      <div class="write-section-header">
+        <span class="write-section-title">🎯 今日任务</span>
+        <span class="write-section-action" id="taskCount">0 / 0 完成</span>
+      </div>
+      <div class="task-add-row">
+        <input type="text" class="task-input-field" id="taskInput"
+          placeholder="添加任务，按 Enter 确认"
+          onkeydown="if(event.key==='Enter') addTask()" />
+        <button class="btn-add" onclick="addTask()">添加</button>
+      </div>
+      <div class="task-items" id="taskList"></div>
+      <div class="task-progress-row" id="taskProgress" style="display:none">
+        <span id="taskDone" style="font-size:11px;letter-spacing:0.05em;font-weight:600;color:var(--green)"></span>
+        <div class="task-bar"><div class="task-bar-fill" id="taskBarFill" style="width:0%"></div></div>
+        <span id="taskTotal" style="font-size:11px;letter-spacing:0.05em;"></span>
+      </div>
+    </div>
+    <div class="save-bar">
+      <button class="btn-solid" onclick="saveAll()">保存记录</button>
+    </div>
+  </div>
+
+  <!-- ── JOURNAL Tab ── -->
+  <div class="write-panel" id="tabJournal">
+    <div class="write-section">
+      <div class="write-section-header">
+        <span class="write-section-title">🌙 今天做了什么</span>
+      </div>
+      <textarea
+        class="write-textarea"
+        id="didTextarea"
+        placeholder="记录今天真实发生的事，哪怕是一杯你认真泡的茶……"
+        rows="7"
+        oninput="autoSave()"
+      ></textarea>
+    </div>
+    <div class="save-bar">
+      <button class="btn-outline" onclick="exportDay()">导出 MD</button>
+      <button class="btn-solid" onclick="saveAll()">保存记录</button>
+    </div>
+  </div>
+
+  <!-- ── THOUGHTS Tab ── -->
+  <div class="write-panel" id="tabThoughts">
+    <div class="write-section">
+      <div class="write-section-header">
+        <span class="write-section-title">💭 今天的心情</span>
+      </div>
+      <div class="emotion-grid" id="emotionGrid">
+        <button class="emo-btn" data-v="peaceful" data-n="平静是一种力量，你正在拥有它。" onclick="pickEmo(this)">😌 平静</button>
+        <button class="emo-btn" data-v="happy"    data-n="今天有什么让你微笑的瞬间吗？" onclick="pickEmo(this)">😊 愉悦</button>
+        <button class="emo-btn" data-v="excited"  data-n="这份热情很珍贵，记下那个让你兴奋的事。" onclick="pickEmo(this)">✨ 兴奋</button>
+        <button class="emo-btn" data-v="grateful" data-n="感恩是一种温柔的魔法。" onclick="pickEmo(this)">🌸 感激</button>
+        <button class="emo-btn" data-v="tired"    data-n="累了就休息，你已经很努力了。" onclick="pickEmo(this)">🌿 疲惫</button>
+        <button class="emo-btn" data-v="anxious"  data-n="把那些担忧写下来，让它们离你远一点。" onclick="pickEmo(this)">🌊 焦虑</button>
+        <button class="emo-btn" data-v="sad"      data-n="允许自己感受，这也是勇气。" onclick="pickEmo(this)">🌧 低落</button>
+        <button class="emo-btn" data-v="confused" data-n="不清晰也没关系，有时问题比答案更重要。" onclick="pickEmo(this)">🌀 迷茫</button>
+        <button class="emo-btn" data-v="focused"  data-n="心无旁骛的状态很珍贵，好好珍惜。" onclick="pickEmo(this)">🔥 专注</button>
+        <button class="emo-btn" data-v="hopeful"  data-n="你对明天还有期待，这就是礼物。" onclick="pickEmo(this)">🌅 期待</button>
+      </div>
+      <div class="emo-note" id="emoNote"></div>
+    </div>
+    <div class="write-section">
+      <div class="write-section-header">
+        <span class="write-section-title">💭 今天在想什么</span>
+      </div>
+      <textarea
+        class="write-textarea"
+        id="thinkTextarea"
+        placeholder="今天脑海里转着什么？可以是一个问题、一个灵感、一个担忧……"
+        rows="6"
+        oninput="autoSave()"
+      ></textarea>
+    </div>
+    <div class="save-bar">
+      <button class="btn-solid" onclick="saveAll()">保存记录</button>
+    </div>
+  </div>
+
+</div><!-- /mainApp -->
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+  <button class="nav-item active" id="navFeed" onclick="switchTab('feed', null, 'navFeed')">
+    <div class="nav-icon">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+        <rect x="3" y="3" width="6" height="6" rx="1"/>
+        <rect x="11" y="3" width="6" height="6" rx="1"/>
+        <rect x="3" y="11" width="6" height="6" rx="1"/>
+        <rect x="11" y="11" width="6" height="6" rx="1"/>
+      </svg>
+    </div>
+    <span class="nav-label">Feed</span>
+  </button>
+  <button class="nav-item" id="navTasks" onclick="switchTab('tasks', null, 'navTasks')">
+    <div class="nav-icon">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M4 6h12M4 10h8M4 14h5"/>
+        <circle cx="16" cy="13" r="2.5"/>
+        <path d="M15 13l.8.8 1.7-1.7" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="nav-label">Tasks</span>
+  </button>
+  <button class="nav-center" id="navWrite" onclick="openImmersive()">+</button>
+  <button class="nav-item" id="navJournal" onclick="switchTab('journal', null, 'navJournal')">
+    <div class="nav-icon">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+        <rect x="4" y="2" width="12" height="16" rx="1.5"/>
+        <path d="M7 7h6M7 10h6M7 13h4"/>
+      </svg>
+    </div>
+    <span class="nav-label">Journal</span>
+  </button>
+  <button class="nav-item" id="navThoughts" onclick="switchTab('thoughts', null, 'navThoughts')">
+    <div class="nav-icon">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M10 3a6 6 0 014.8 9.6L16 17l-3.2-1.4A6 6 0 1110 3z"/>
+      </svg>
+    </div>
+    <span class="nav-label">Thoughts</span>
+  </button>
+</nav>
+
+<script>
+// ── Data & Storage ─────────────────────────────────────
+const API = '';  // 同源，留空即可
+let D = { tasks: [], did: '', think: '', emotion: '', immersive: '' };
+let _saveTimer = null;
+
+// 今天的 ISO 日期字符串
+function todayISO() {
+  const n = new Date();
+  return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+}
+
+// 从服务器加载今天的数据
+async function loadFromServer() {
+  try {
+    const res = await fetch(`${API}/api/load?date=${todayISO()}`);
+    const json = await res.json();
+    if (json.ok && json.data && Object.keys(json.data).length > 0) {
+      D = { tasks: [], did: '', think: '', emotion: '', immersive: '', ...json.data };
+    }
+  } catch(e) {
+    console.warn('API 不可用，使用本地缓存', e);
+    // 降级到 localStorage
+    const cached = localStorage.getItem(`secondme_v2_${new Date().toDateString()}`);
+    if (cached) D = { ...D, ...JSON.parse(cached) };
+  }
+}
+
+// 保存到服务器（防抖 1.5s）
+function persist() {
+  // 同时写 localStorage 作为备份
+  localStorage.setItem(`secondme_v2_${new Date().toDateString()}`, JSON.stringify(D));
+  // 防抖保存到文件
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(saveToServer, 1500);
+}
+
+async function saveToServer() {
+  try {
+    const res = await fetch(`${API}/api/save`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date: todayISO(), ...D }),
+    });
+    const json = await res.json();
+    if (json.ok) {
+      // 静默成功，不打扰用户
+      _lastSavedPath = json.file;
+    }
+  } catch(e) {
+    console.warn('保存到文件失败，已保存到 localStorage', e);
+  }
+}
+let _lastSavedPath = '';
+
+// ── Date helpers ───────────────────────────────────────
+const now = new Date();
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const WEEKDAYS = ['日','一','二','三','四','五','六'];
+const dateStr = `${MONTHS[now.getMonth()]} ${now.getDate()} ${now.getFullYear()}`;
+const dateStrFull = `${now.getFullYear()} 年 ${now.getMonth()+1} 月 ${now.getDate()} 日`;
+const weekStr = `周${WEEKDAYS[now.getDay()]}`;
+const timeStr = now.toLocaleTimeString('zh-CN', { hour:'2-digit', minute:'2-digit' });
+const volNum  = String(Math.ceil((now.getMonth()+1)/3)).padStart(2,'0'); // quarterly vol
+
+document.getElementById('headerYear').textContent = now.getFullYear();
+document.getElementById('headerVol').textContent  = volNum;
+document.getElementById('immDateTag').textContent  = `${dateStr} · ${weekStr}`;
+document.getElementById('immPromoDate').textContent = dateStr + '  |  ' + timeStr;
+
+const h = now.getHours();
+const greet = h < 6 ? '夜深了，还没休息？' :
+              h < 9 ? `早安，${weekStr}的开始。` :
+              h < 12? '上午好，今天想完成什么？' :
+              h < 14? '午后时光，记录上午的收获。' :
+              h < 18? '下午好，保持专注。' :
+              h < 21? '傍晚了，今天过得怎样？' : '晚上好，今天的记录还差一点。';
+document.getElementById('greetingBar').textContent = greet;
+
+// ── Tab switching ──────────────────────────────────────
+const TABS = { feed:'tabFeed', tasks:'tabTasks', journal:'tabJournal', thoughts:'tabThoughts' };
+const NAV_MAP = { feed:'navFeed', tasks:'navTasks', journal:'navJournal', thoughts:'navThoughts' };
+let currentTab = 'feed';
+
+function switchTab(tab, tabBtn, navId) {
+  currentTab = tab;
+  // hide all panels
+  Object.values(TABS).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.display = 'none'; el.classList.remove('active'); }
+  });
+  // show target
+  const target = document.getElementById(TABS[tab]);
+  if (target) { target.style.display = 'block'; target.classList.add('active'); }
+
+  // tab buttons
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (tabBtn) tabBtn.classList.add('active');
+  else {
+    const tb = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+    if (tb) tb.classList.add('active');
+  }
+
+  // nav items
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const nid = navId || NAV_MAP[tab];
+  if (nid) { const ne = document.getElementById(nid); if (ne) ne.classList.add('active'); }
+}
+
+// init: show feed
+switchTab('feed');
+
+// ── Feed cards ─────────────────────────────────────────
+function renderFeed() {
+  const container = document.getElementById('feedCards');
+  container.innerHTML = '';
+
+  const totalTasks = D.tasks.length;
+  const doneTasks  = D.tasks.filter(t => t.done).length;
+
+  // Tasks card
+  const taskCard = document.createElement('div');
+  taskCard.className = 'entry-card';
+  taskCard.onclick = () => switchTab('tasks', null, 'navTasks');
+  const taskEmojiSet = totalTasks === 0 ? '🎯' : doneTasks === totalTasks ? '✅' : '📋';
+  taskCard.innerHTML = `
+    <div class="entry-card-inner">
+      <div class="entry-body">
+        <div class="entry-meta">
+          <span class="entry-date">${dateStr}</span>
+          <span class="entry-sep">|</span>
+          <span class="entry-time">${timeStr}</span>
+        </div>
+        <div class="entry-title serif">今日任务</div>
+        <div class="entry-excerpt">${
+          totalTasks === 0
+            ? '点击添加今天的任务清单。'
+            : `${totalTasks} 项任务 · 已完成 ${doneTasks} 项${doneTasks === totalTasks && totalTasks > 0 ? ' ✓ 全部完成' : ''}`
+        }</div>
+      </div>
+    </div>
+    ${totalTasks > 0 ? `<div class="entry-tags">
+      <span class="tag tag-outline">${doneTasks}/${totalTasks} Done</span>
+      ${doneTasks === totalTasks && totalTasks > 0 ? '<span class="tag tag-green">ALL DONE</span>' : ''}
+    </div>` : ''}
+  `;
+  container.appendChild(taskCard);
+
+  // Did today card
+  const didCard = document.createElement('div');
+  didCard.className = 'entry-card';
+  didCard.onclick = () => switchTab('journal', null, 'navJournal');
+  didCard.innerHTML = `
+    <div class="entry-card-inner">
+      <div class="entry-body">
+        <div class="entry-meta">
+          <span class="entry-date">${dateStr}</span>
+          <span class="entry-sep">|</span>
+          <span class="entry-time">${timeStr}</span>
+        </div>
+        <div class="entry-title serif">今天做了什么</div>
+        <div class="entry-excerpt">${D.did || '点击记录今天发生的事……'}</div>
+      </div>
+    </div>
+    ${D.did ? `<div class="entry-tags"><span class="tag tag-outline">#JOURNAL</span><span class="tag tag-outline">#DAILY</span></div>` : ''}
+  `;
+  container.appendChild(didCard);
+
+  // Thoughts card
+  const emoBtn = D.emotion ? document.querySelector(`.emo-btn[data-v="${D.emotion}"]`) : null;
+  const emoText = emoBtn ? emoBtn.textContent.trim() : '';
+  const thinkCard = document.createElement('div');
+  thinkCard.className = 'entry-card';
+  thinkCard.onclick = () => switchTab('thoughts', null, 'navThoughts');
+  thinkCard.innerHTML = `
+    <div class="entry-card-inner">
+      <div class="entry-body">
+        <div class="entry-meta">
+          <span class="entry-date">${dateStr}</span>
+          <span class="entry-sep">|</span>
+          <span class="entry-time">${timeStr}</span>
+        </div>
+        <div class="entry-title serif">今天在想什么</div>
+        <div class="entry-excerpt">${D.think || '点击记录今天的想法和心情……'}</div>
+      </div>
+    </div>
+    ${D.emotion || D.think ? `<div class="entry-tags">
+      ${emoText ? `<span class="tag tag-outline">${emoText}</span>` : ''}
+      ${D.think ? '<span class="tag tag-outline">#THOUGHTS</span>' : ''}
+    </div>` : ''}
+  `;
+  container.appendChild(thinkCard);
+
+  // Immersive card — 有内容显示摘要，没有显示入口
+  const immCard = document.createElement('div');
+  immCard.className = 'entry-card';
+  immCard.onclick = openImmersive;
+  if (D.immersive) {
+    const wordCount = [...D.immersive].filter(c => c.trim()).length;
+    immCard.innerHTML = `
+      <div class="entry-card-inner">
+        <div class="entry-body">
+          <div class="entry-meta">
+            <span class="entry-date">${dateStr}</span>
+            <span class="entry-sep">|</span>
+            <span class="entry-time">${timeStr}</span>
+          </div>
+          <div class="entry-title serif">沉浸写作</div>
+          <div class="entry-excerpt">${D.immersive.slice(0, 80)}…</div>
+        </div>
+      </div>
+      <div class="entry-tags">
+        <span class="tag tag-outline">${wordCount} 字</span>
+        <span class="tag tag-outline">#WRITING</span>
+      </div>
+    `;
+  } else {
+    immCard.innerHTML = `
+      <div class="entry-card-inner">
+        <div class="entry-body">
+          <div class="entry-meta">
+            <span class="entry-date">${dateStr}</span>
+            <span class="entry-sep">|</span>
+            <span class="entry-time">${timeStr}</span>
+          </div>
+          <div class="entry-title serif">进入沉浸写作</div>
+          <div class="entry-excerpt">全屏、安静、只有你和文字。</div>
+        </div>
+      </div>
+      <div class="entry-tags"><span class="tag tag-outline">#IMMERSIVE</span></div>
+    `;
+  }
+  container.appendChild(immCard);
+
+}
+
+// ── Tasks ──────────────────────────────────────────────
+function renderTasks() {
+  const list = document.getElementById('taskList');
+  list.innerHTML = '';
+  D.tasks.forEach((t, i) => {
+    const row = document.createElement('div');
+    row.className = 'task-row';
+    row.innerHTML = `
+      <div class="task-check-box ${t.done ? 'done' : ''}" onclick="toggleTask(${i})"></div>
+      <div class="task-label ${t.done ? 'done' : ''}" contenteditable="true"
+        onblur="editTask(${i}, this.textContent)"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"
+      >${t.text}</div>
+      <button class="task-del" onclick="deleteTask(${i})">×</button>
+    `;
+    list.appendChild(row);
+  });
+  updateTaskStats();
+  renderFeed();
+}
+
+function updateTaskStats() {
+  const total = D.tasks.length, done = D.tasks.filter(t=>t.done).length;
+  document.getElementById('taskCount').textContent = `${done} / ${total} 完成`;
+  const prog = document.getElementById('taskProgress');
+  prog.style.display = total > 0 ? 'flex' : 'none';
+  document.getElementById('taskDone').textContent = `已完成 ${done}`;
+  document.getElementById('taskTotal').textContent = `共 ${total} 项`;
+  document.getElementById('taskBarFill').style.width = total > 0 ? (done/total*100)+'%' : '0%';
+}
+
+function addTask() {
+  const inp = document.getElementById('taskInput');
+  const text = inp.value.trim();
+  if (!text) return;
+  D.tasks.push({ text, done: false });
+  inp.value = '';
+  persist();
+  renderTasks();
+}
+function toggleTask(i) { D.tasks[i].done = !D.tasks[i].done; persist(); renderTasks(); }
+function deleteTask(i) { D.tasks.splice(i, 1); persist(); renderTasks(); }
+function editTask(i, text) { if (text.trim()) { D.tasks[i].text = text.trim(); persist(); } }
+
+// ── Emotions ───────────────────────────────────────────
+function pickEmo(btn) {
+  document.querySelectorAll('.emo-btn').forEach(b => b.classList.remove('active', 'green-emo'));
+  btn.classList.add('active');
+  if (['happy','excited','hopeful','focused'].includes(btn.dataset.v)) btn.classList.add('green-emo');
+  D.emotion = btn.dataset.v;
+  document.getElementById('emoNote').textContent = btn.dataset.n;
+  persist();
+  renderFeed();
+}
+function restoreEmotion() {
+  if (!D.emotion) return;
+  const btn = document.querySelector(`.emo-btn[data-v="${D.emotion}"]`);
+  if (btn) { pickEmo(btn); }
+}
+
+// ── Auto save ──────────────────────────────────────────
+function autoSave() {
+  D.did   = document.getElementById('didTextarea').value;
+  D.think = document.getElementById('thinkTextarea').value;
+  persist();
+  renderFeed();
+}
+
+function saveAll() {
+  autoSave();
+  // 立即触发保存（不等防抖）
+  clearTimeout(_saveTimer);
+  saveToServer().then(() => {
+    const hint = _lastSavedPath ? `已保存 → ${_lastSavedPath}` : '已保存';
+    showToast(hint);
+  });
+}
+
+// ── Export ─────────────────────────────────────────────
+function exportDay() {
+  const ymd = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const emoBtn = document.querySelector('.emo-btn.active');
+  const emoStr = emoBtn ? emoBtn.textContent.trim() : '未选择';
+  const tasks = D.tasks.map(t => `- [${t.done?'x':' '}] ${t.text}`).join('\n') || '（无）';
+  const md = `# ${ymd} 个人记录\n\n## 🎯 今日任务\n${tasks}\n\n## 🌙 今天做了什么\n${D.did||'（无）'}\n\n## 💭 今天的心情\n${emoStr}\n\n## 💭 今天在想什么\n${D.think||'（无）'}\n\n## ✦ 沉浸写作\n${D.immersive||'（无）'}`;
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([md], {type:'text/markdown'})),
+    download: `${ymd}-record.md`
+  });
+  a.click();
+  showToast('已导出 Markdown');
+}
+
+// ── Immersive ──────────────────────────────────────────
+const PROMPTS = {
+  free:     '不需要完美，只需要真实。让文字带你走。',
+  reflect:  '今天最重要的一件事是什么？你学到了什么？什么值得明天继续？',
+  grateful: '今天，有哪三件事让你心怀感激？哪怕很小——一缕阳光，一句及时的话。',
+  letter:   '亲爱的未来的我，今天我想告诉你……',
+  stream:   '不要停，不要想，就写。把脑海里的声音全部倒出来。',
+};
+
+function openImmersive() {
+  document.getElementById('immTextarea').value = D.immersive || '';
+  updatePrompt();
+  onImmInput();
+  document.getElementById('immersiveOverlay').classList.add('open');
+  document.getElementById('navWrite').classList.add('writing');
+  setTimeout(() => document.getElementById('immTextarea').focus(), 120);
+}
+function closeImmersive() {
+  D.immersive = document.getElementById('immTextarea').value;
+  persist();
+  renderFeed();
+  document.getElementById('immersiveOverlay').classList.remove('open');
+  document.getElementById('navWrite').classList.remove('writing');
+}
+function saveImmersive() {
+  D.immersive = document.getElementById('immTextarea').value;
+  persist();
+  renderFeed();
+  showToast('写作内容已保存');
+}
+function updatePrompt() {
+  const tone = document.getElementById('immTone').value;
+  document.getElementById('immPrompt').textContent = PROMPTS[tone];
+}
+function onImmInput() {
+  const text = document.getElementById('immTextarea').value;
+  const count = [...text].filter(c => c.trim()).length;
+  document.getElementById('immCount').textContent = count + ' 字';
+}
+
+// ── Keyboard ───────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  const overlay = document.getElementById('immersiveOverlay');
+  if (e.key === 'Escape' && overlay.classList.contains('open')) closeImmersive();
+  if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+    e.preventDefault();
+    if (overlay.classList.contains('open')) saveImmersive();
+    else saveAll();
+  }
+});
+
+// ── Toast ──────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ── Init ───────────────────────────────────────────────
+(async function init() {
+  await loadFromServer();   // 先从服务器（文件）加载
+  renderTasks();
+  document.getElementById('didTextarea').value   = D.did;
+  document.getElementById('thinkTextarea').value = D.think;
+  restoreEmotion();
+  renderFeed();
+})();
+</script>
+</body>
+</html>

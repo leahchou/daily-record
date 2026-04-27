@@ -947,7 +947,7 @@ const volNum  = String(Math.ceil((now.getMonth()+1)/3)).padStart(2,'0'); // quar
 document.getElementById('headerYear').textContent = now.getFullYear();
 document.getElementById('headerVol').textContent  = volNum;
 document.getElementById('immDateTag').textContent  = `${dateStr} · ${weekStr}`;
-document.getElementById('immPromoDate').textContent = dateStr + '  |  ' + timeStr;
+// immPromoDate removed (now rendered dynamically in renderFeed)
 
 const h = now.getHours();
 const greet = h < 6 ? '夜深了，还没休息？' :

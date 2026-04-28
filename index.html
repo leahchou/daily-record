@@ -80,16 +80,21 @@ body {
 /* ── Calendar button ── */
 .cal-btn {
   background: none;
-  border: none;
+  border: 1px solid var(--border);
+  border-radius: 3px;
   cursor: pointer;
-  padding: 0;
+  padding: 4px 10px 4px 8px;
   color: var(--gray2);
-  font-size: 14px;
+  font-size: 11px;
   letter-spacing: 0.08em;
   font-family: 'HuiwenMincho', 'Noto Serif SC', serif;
-  transition: color 0.15s;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
-.cal-btn:hover { color: var(--black); }
+.cal-btn:hover { color: var(--black); border-color: var(--black); }
+.cal-btn svg { flex-shrink: 0; }
 
 /* ── Calendar overlay ── */
 .cal-overlay {
@@ -1029,7 +1034,15 @@ body {
   <div class="site-header">
     <div class="site-header-top">
       <span class="label">ARCHIVE — <span id="headerYear"></span></span>
-      <button class="cal-btn" onclick="openCal()">📅 <span id="calBtnLabel"></span></button>
+      <button class="cal-btn" onclick="openCal()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="2" width="10" height="9" rx="1.5"/>
+          <line x1="4" y1="1" x2="4" y2="3.5"/>
+          <line x1="8" y1="1" x2="8" y2="3.5"/>
+          <line x1="1" y1="5" x2="11" y2="5"/>
+        </svg>
+        <span id="calBtnLabel"></span>
+      </button>
     </div>
     <div class="site-title serif">个人记录</div>
     <div class="greeting-bar" id="greetingBar"></div>

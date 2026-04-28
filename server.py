@@ -32,8 +32,8 @@ DAILY_DIR.mkdir(parents=True, exist_ok=True)
 EMOTION_MAP = {
     "peaceful": "😌 平静", "happy": "😊 愉悦", "excited": "✨ 兴奋",
     "grateful": "🌸 感激", "tired": "🌿 疲惫", "anxious": "🌊 焦虑",
-    "sad": "🌧 低落",  "confused": "🌀 迷茫", "focused": "🔥 专注",
-    "hopeful": "🌅 期待",
+    "irritated": "😤 烦躁", "sad": "🌧 低落", "confused": "🌀 迷茫",
+    "focused": "🔥 专注", "hopeful": "🌅 期待",
 }
 EMOTION_RMAP = {v: k for k, v in EMOTION_MAP.items()}
 
@@ -53,10 +53,13 @@ def build_file(d: date, data: dict) -> str:
     lines.append(f"tags: daily-record")
     lines.append("")
 
-    # 情绪
-    emotion = data.get("emotion", "")
-    if emotion:
-        lines.append(f"> 今日心情：{EMOTION_MAP.get(emotion, emotion)}")
+    # 情绪（支持数组或单值，向后兼容）
+    emotion = data.get("emotion", [])
+    if isinstance(emotion, str):
+        emotion = [emotion] if emotion else []
+    emo_labels = [EMOTION_MAP.get(e, e) for e in emotion if e]
+    if emo_labels:
+        lines.append(f"> 今日心情：{' · '.join(emo_labels)}")
         lines.append("")
 
     # 今日任务
@@ -103,12 +106,13 @@ def parse_file(d: date) -> dict:
         return {}
 
     content = f.read_text(encoding="utf-8")
-    result: dict = {"tasks": [], "did": "", "think": "", "emotion": "", "immersive": ""}
+    result: dict = {"tasks": [], "did": "", "think": "", "emotion": [], "immersive": ""}
 
-    # 情绪
+    # 情绪（支持多选，用 · 分隔；向后兼容旧的单选格式）
     emo_m = re.search(r"> 今日心情：(.+)", content)
     if emo_m:
-        result["emotion"] = EMOTION_RMAP.get(emo_m.group(1).strip(), "")
+        parts = [p.strip() for p in emo_m.group(1).split(" · ")]
+        result["emotion"] = [EMOTION_RMAP[p] for p in parts if p in EMOTION_RMAP]
 
     # 任务
     task_sec = re.search(r"## 🎯 今日任务\n\n(.*?)(?=^##|\Z)", content, re.DOTALL | re.MULTILINE)

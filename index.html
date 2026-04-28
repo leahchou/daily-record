@@ -1116,16 +1116,17 @@ body {
         <span class="write-section-title">✦ 今天的心情</span>
       </div>
       <div class="emotion-grid" id="emotionGrid">
-        <button class="emo-btn" data-v="peaceful" data-n="平静是一种力量，你正在拥有它。" onclick="pickEmo(this)">😌 平静</button>
-        <button class="emo-btn" data-v="happy"    data-n="今天有什么让你微笑的瞬间吗？" onclick="pickEmo(this)">😊 愉悦</button>
-        <button class="emo-btn" data-v="excited"  data-n="这份热情很珍贵，记下那个让你兴奋的事。" onclick="pickEmo(this)">✨ 兴奋</button>
-        <button class="emo-btn" data-v="grateful" data-n="感恩是一种温柔的魔法。" onclick="pickEmo(this)">🌸 感激</button>
-        <button class="emo-btn" data-v="tired"    data-n="累了就休息，你已经很努力了。" onclick="pickEmo(this)">🌿 疲惫</button>
-        <button class="emo-btn" data-v="anxious"  data-n="把那些担忧写下来，让它们离你远一点。" onclick="pickEmo(this)">🌊 焦虑</button>
-        <button class="emo-btn" data-v="sad"      data-n="允许自己感受，这也是勇气。" onclick="pickEmo(this)">🌧 低落</button>
-        <button class="emo-btn" data-v="confused" data-n="不清晰也没关系，有时问题比答案更重要。" onclick="pickEmo(this)">🌀 迷茫</button>
-        <button class="emo-btn" data-v="focused"  data-n="心无旁骛的状态很珍贵，好好珍惜。" onclick="pickEmo(this)">🔥 专注</button>
-        <button class="emo-btn" data-v="hopeful"  data-n="你对明天还有期待，这就是礼物。" onclick="pickEmo(this)">🌅 期待</button>
+        <button class="emo-btn" data-v="peaceful"  data-n="平静是一种力量，你正在拥有它。" onclick="pickEmo(this)">😌 平静</button>
+        <button class="emo-btn" data-v="happy"     data-n="今天有什么让你微笑的瞬间吗？" onclick="pickEmo(this)">😊 愉悦</button>
+        <button class="emo-btn" data-v="excited"   data-n="这份热情很珍贵，记下那个让你兴奋的事。" onclick="pickEmo(this)">✨ 兴奋</button>
+        <button class="emo-btn" data-v="grateful"  data-n="感恩是一种温柔的魔法。" onclick="pickEmo(this)">🌸 感激</button>
+        <button class="emo-btn" data-v="tired"     data-n="累了就休息，你已经很努力了。" onclick="pickEmo(this)">🌿 疲惫</button>
+        <button class="emo-btn" data-v="anxious"   data-n="把那些担忧写下来，让它们离你远一点。" onclick="pickEmo(this)">🌊 焦虑</button>
+        <button class="emo-btn" data-v="irritated" data-n="烦躁也是信号，看看它在告诉你什么。" onclick="pickEmo(this)">😤 烦躁</button>
+        <button class="emo-btn" data-v="sad"       data-n="允许自己感受，这也是勇气。" onclick="pickEmo(this)">🌧 低落</button>
+        <button class="emo-btn" data-v="confused"  data-n="不清晰也没关系，有时问题比答案更重要。" onclick="pickEmo(this)">🌀 迷茫</button>
+        <button class="emo-btn" data-v="focused"   data-n="心无旁骛的状态很珍贵，好好珍惜。" onclick="pickEmo(this)">🔥 专注</button>
+        <button class="emo-btn" data-v="hopeful"   data-n="你对明天还有期待，这就是礼物。" onclick="pickEmo(this)">🌅 期待</button>
       </div>
       <div class="emo-note" id="emoNote"></div>
     </div>
@@ -1194,7 +1195,7 @@ body {
 <script>
 // ── Data & Storage ─────────────────────────────────────
 const API = '';  // 同源，留空即可
-let D = { tasks: [], did: '', think: '', emotion: '', immersive: '' };
+let D = { tasks: [], did: '', think: '', emotion: [], immersive: '' };
 let _saveTimer = null;
 
 // 今天的 ISO 日期字符串
@@ -1209,13 +1210,17 @@ async function loadFromServer() {
     const res = await fetch(`${API}/api/load?date=${todayISO()}`);
     const json = await res.json();
     if (json.ok && json.data && Object.keys(json.data).length > 0) {
-      D = { tasks: [], did: '', think: '', emotion: '', immersive: '', ...json.data };
+      D = { tasks: [], did: '', think: '', emotion: [], immersive: '', ...json.data };
+      if (typeof D.emotion === 'string') D = { ...D, emotion: D.emotion ? [D.emotion] : [] };
     }
   } catch(e) {
     console.warn('API 不可用，使用本地缓存', e);
-    // 降级到 localStorage
     const cached = localStorage.getItem(`secondme_v2_${new Date().toDateString()}`);
-    if (cached) D = { ...D, ...JSON.parse(cached) };
+    if (cached) {
+      const c = JSON.parse(cached);
+      if (typeof c.emotion === 'string') c.emotion = c.emotion ? [c.emotion] : [];
+      D = { ...D, ...c };
+    }
   }
 }
 
@@ -1357,8 +1362,7 @@ function renderFeed() {
   container.appendChild(didCard);
 
   // Thoughts card
-  const emoBtn = D.emotion ? document.querySelector(`.emo-btn[data-v="${D.emotion}"]`) : null;
-  const emoText = emoBtn ? emoBtn.textContent.trim() : '';
+  const emoText = (D.emotion || []).map(v => EMOTION_LABELS[v]).filter(Boolean).join(' · ');
   const thinkCard = document.createElement('div');
   thinkCard.className = 'entry-card';
   thinkCard.onclick = () => switchTab('thoughts', null, 'navThoughts');
@@ -1469,19 +1473,35 @@ function deleteTask(i) { D = { ...D, tasks: D.tasks.filter((_, j) => j !== i) };
 function editTask(i, text) { if (text.trim()) { D = { ...D, tasks: D.tasks.map((t, j) => j === i ? { ...t, text: text.trim() } : t) }; persist(); } }
 
 // ── Emotions ───────────────────────────────────────────
+const GREEN_EMOS = new Set(['happy','excited','hopeful','focused']);
+
 function pickEmo(btn) {
-  document.querySelectorAll('.emo-btn').forEach(b => b.classList.remove('active', 'green-emo'));
-  btn.classList.add('active');
-  if (['happy','excited','hopeful','focused'].includes(btn.dataset.v)) btn.classList.add('green-emo');
-  D.emotion = btn.dataset.v;
-  document.getElementById('emoNote').textContent = btn.dataset.n;
+  const v = btn.dataset.v;
+  if (D.emotion.includes(v)) {
+    D = { ...D, emotion: D.emotion.filter(e => e !== v) };
+    btn.classList.remove('active', 'green-emo');
+  } else {
+    D = { ...D, emotion: [...D.emotion, v] };
+    btn.classList.add('active');
+    if (GREEN_EMOS.has(v)) btn.classList.add('green-emo');
+  }
+  const last = D.emotion[D.emotion.length - 1];
+  const lastBtn = last ? document.querySelector(`.emo-btn[data-v="${last}"]`) : null;
+  document.getElementById('emoNote').textContent = lastBtn ? lastBtn.dataset.n : '';
   persist();
   renderFeed();
 }
 function restoreEmotion() {
-  if (!D.emotion) return;
-  const btn = document.querySelector(`.emo-btn[data-v="${D.emotion}"]`);
-  if (btn) { pickEmo(btn); }
+  if (!D.emotion || !D.emotion.length) return;
+  D.emotion.forEach(v => {
+    const btn = document.querySelector(`.emo-btn[data-v="${v}"]`);
+    if (!btn) return;
+    btn.classList.add('active');
+    if (GREEN_EMOS.has(v)) btn.classList.add('green-emo');
+  });
+  const last = D.emotion[D.emotion.length - 1];
+  const lastBtn = last ? document.querySelector(`.emo-btn[data-v="${last}"]`) : null;
+  if (lastBtn) document.getElementById('emoNote').textContent = lastBtn.dataset.n;
 }
 
 // ── Auto save ──────────────────────────────────────────
@@ -1680,8 +1700,8 @@ let _historyLoaded = 0;
 
 const EMOTION_LABELS = {
   peaceful:'😌 平静', happy:'😊 愉悦', excited:'✨ 兴奋', grateful:'🌸 感激',
-  tired:'🌿 疲惫', anxious:'🌊 焦虑', sad:'🌧 低落', confused:'🌀 迷茫',
-  focused:'🔥 专注', hopeful:'🌅 期待',
+  tired:'🌿 疲惫', anxious:'🌊 焦虑', irritated:'😤 烦躁', sad:'🌧 低落',
+  confused:'🌀 迷茫', focused:'🔥 专注', hopeful:'🌅 期待',
 };
 
 async function initHistory() {

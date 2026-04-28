@@ -36,7 +36,6 @@ button, input, select, textarea {
   --gray3:   #bbb;
   --border:  #d8d0c4;
   --red:     #c0392b;
-  --blue:    #2980b9;
   --radius:  4px;
 }
 
@@ -1033,7 +1032,7 @@ body {
   <!-- Site Header -->
   <div class="site-header">
     <div class="site-header-top">
-      <span class="label">ARCHIVE — <span id="headerYear"></span></span>
+      <span class="label">SECOND ME — <span id="headerYear"></span></span>
       <button class="cal-btn" onclick="openCal()">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="1" y="2" width="10" height="9" rx="1.5"/>
@@ -1050,10 +1049,10 @@ body {
 
   <!-- Tab Nav -->
   <div class="tab-nav" id="tabNav">
-    <button class="tab-btn active" data-tab="feed" onclick="switchTab('feed', this)">全部记录</button>
-    <button class="tab-btn" data-tab="tasks" onclick="switchTab('tasks', this)">今日任务</button>
-    <button class="tab-btn" data-tab="journal" onclick="switchTab('journal', this)">日记</button>
-    <button class="tab-btn" data-tab="thoughts" onclick="switchTab('thoughts', this)">碎碎念</button>
+    <button class="tab-btn active" data-tab="feed" onclick="switchTab('feed', this)">Feed</button>
+    <button class="tab-btn" data-tab="tasks" onclick="switchTab('tasks', this)">Tasks</button>
+    <button class="tab-btn" data-tab="journal" onclick="switchTab('journal', this)">Journal</button>
+    <button class="tab-btn" data-tab="thoughts" onclick="switchTab('thoughts', this)">Notes</button>
   </div>
 
   <!-- ── FEED Tab ── -->
@@ -1114,7 +1113,7 @@ body {
   <div class="write-panel" id="tabThoughts">
     <div class="write-section">
       <div class="write-section-header">
-        <span class="write-section-title">💭 今天的心情</span>
+        <span class="write-section-title">✦ 今天的心情</span>
       </div>
       <div class="emotion-grid" id="emotionGrid">
         <button class="emo-btn" data-v="peaceful" data-n="平静是一种力量，你正在拥有它。" onclick="pickEmo(this)">😌 平静</button>
@@ -1253,14 +1252,9 @@ const now = new Date();
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const WEEKDAYS = ['日','一','二','三','四','五','六'];
 const dateStr = `${MONTHS[now.getMonth()]} ${now.getDate()} ${now.getFullYear()}`;
-const dateStrFull = `${now.getFullYear()} 年 ${now.getMonth()+1} 月 ${now.getDate()} 日`;
 const weekStr = `周${WEEKDAYS[now.getDay()]}`;
-const timeStr = now.toLocaleTimeString('zh-CN', { hour:'2-digit', minute:'2-digit' });
-const volNum  = String(Math.ceil((now.getMonth()+1)/3)).padStart(2,'0'); // quarterly vol
 
 document.getElementById('headerYear').textContent = now.getFullYear();
-const _headerVol = document.getElementById('headerVol');
-if (_headerVol) _headerVol.textContent = volNum;
 document.getElementById('immDateTag').textContent  = `${dateStr} · ${weekStr}`;
 // immPromoDate removed (now rendered dynamically in renderFeed)
 
@@ -1325,7 +1319,7 @@ function renderFeed() {
         <div class="entry-meta">
           <span class="entry-date">${dateStr}</span>
           <span class="entry-sep">|</span>
-          <span class="entry-time">${timeStr}</span>
+          <span class="entry-time">TASKS</span>
         </div>
         <div class="entry-title serif">今日任务</div>
         <div class="entry-excerpt">${
@@ -1352,7 +1346,7 @@ function renderFeed() {
         <div class="entry-meta">
           <span class="entry-date">${dateStr}</span>
           <span class="entry-sep">|</span>
-          <span class="entry-time">${timeStr}</span>
+          <span class="entry-time">JOURNAL</span>
         </div>
         <div class="entry-title serif">今天做了什么</div>
         <div class="entry-excerpt">${D.did || '点击记录今天发生的事……'}</div>
@@ -1374,7 +1368,7 @@ function renderFeed() {
         <div class="entry-meta">
           <span class="entry-date">${dateStr}</span>
           <span class="entry-sep">|</span>
-          <span class="entry-time">${timeStr}</span>
+          <span class="entry-time">NOTES</span>
         </div>
         <div class="entry-title serif">今天在想什么</div>
         <div class="entry-excerpt">${D.think || '点击记录今天的想法和心情……'}</div>
@@ -1399,7 +1393,7 @@ function renderFeed() {
           <div class="entry-meta">
             <span class="entry-date">${dateStr}</span>
             <span class="entry-sep">|</span>
-            <span class="entry-time">${timeStr}</span>
+            <span class="entry-time">WRITING</span>
           </div>
           <div class="entry-title serif">沉浸写作</div>
           <div class="entry-excerpt">${D.immersive.slice(0, 80)}…</div>
@@ -1417,7 +1411,7 @@ function renderFeed() {
           <div class="entry-meta">
             <span class="entry-date">${dateStr}</span>
             <span class="entry-sep">|</span>
-            <span class="entry-time">${timeStr}</span>
+            <span class="entry-time">WRITING</span>
           </div>
           <div class="entry-title serif">进入沉浸写作</div>
           <div class="entry-excerpt">全屏、安静、只有你和文字。</div>
@@ -1470,9 +1464,9 @@ function addTask() {
   persist();
   renderTasks();
 }
-function toggleTask(i) { D.tasks[i].done = !D.tasks[i].done; persist(); renderTasks(); }
-function deleteTask(i) { D.tasks.splice(i, 1); persist(); renderTasks(); }
-function editTask(i, text) { if (text.trim()) { D.tasks[i].text = text.trim(); persist(); } }
+function toggleTask(i) { D = { ...D, tasks: D.tasks.map((t, j) => j === i ? { ...t, done: !t.done } : t) }; persist(); renderTasks(); }
+function deleteTask(i) { D = { ...D, tasks: D.tasks.filter((_, j) => j !== i) }; persist(); renderTasks(); }
+function editTask(i, text) { if (text.trim()) { D = { ...D, tasks: D.tasks.map((t, j) => j === i ? { ...t, text: text.trim() } : t) }; persist(); } }
 
 // ── Emotions ───────────────────────────────────────────
 function pickEmo(btn) {
@@ -1514,7 +1508,7 @@ function exportDay() {
   const emoBtn = document.querySelector('.emo-btn.active');
   const emoStr = emoBtn ? emoBtn.textContent.trim() : '未选择';
   const tasks = D.tasks.map(t => `- [${t.done?'x':' '}] ${t.text}`).join('\n') || '（无）';
-  const md = `# ${ymd} 个人记录\n\n## 🎯 今日任务\n${tasks}\n\n## 🌙 今天做了什么\n${D.did||'（无）'}\n\n## 💭 今天的心情\n${emoStr}\n\n## 💭 今天在想什么\n${D.think||'（无）'}\n\n## ✦ 沉浸写作\n${D.immersive||'（无）'}`;
+  const md = `# ${ymd} 个人记录\n\n## 🎯 今日任务\n${tasks}\n\n## 🌙 今天做了什么\n${D.did||'（无）'}\n\n## ✦ 今天的心情\n${emoStr}\n\n## 💭 今天在想什么\n${D.think||'（无）'}\n\n## ✦ 沉浸写作\n${D.immersive||'（无）'}`;
   const a = Object.assign(document.createElement('a'), {
     href: URL.createObjectURL(new Blob([md], {type:'text/markdown'})),
     download: `${ymd}-record.md`
@@ -1578,6 +1572,11 @@ document.addEventListener('keydown', e => {
   }
 });
 
+// ── Escape HTML ────────────────────────────────────────
+function esc(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 // ── Toast ──────────────────────────────────────────────
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -1618,7 +1617,7 @@ function closeCal() {
   document.getElementById('calOverlay').classList.remove('open');
 }
 function navCal(dir) {
-  _calDate.setMonth(_calDate.getMonth() + dir);
+  _calDate = new Date(_calDate.getFullYear(), _calDate.getMonth() + dir, 1);
   renderCalendar();
 }
 
@@ -1752,7 +1751,7 @@ async function loadHistoryCard(iso, card) {
         ${emoLabel ? `<span class="tag tag-outline">${emoLabel}</span>` : ''}
         ${taskCount ? `<span class="tag tag-outline">${doneCount}/${taskCount} Done</span>` : ''}
       </div>
-      <div class="history-title">${data.did ? '今天做了什么' : data.think ? '今天在想什么' : '记录'}</div>
+      <div class="history-title">${data.did ? 'Journal' : data.think ? 'Notes' : 'Record'}</div>
       <div class="history-excerpt">${excerpt}</div>
     </div>
   `;
@@ -1811,17 +1810,17 @@ async function openDayModal(iso) {
 
   if (data.did) html += `<div class="day-modal-section">
     <div class="day-modal-section-title">今天做了什么</div>
-    <div class="day-modal-text">${data.did}</div>
+    <div class="day-modal-text">${esc(data.did)}</div>
   </div>`;
 
   if (data.think) html += `<div class="day-modal-section">
     <div class="day-modal-section-title">今天在想什么</div>
-    <div class="day-modal-text">${data.think}</div>
+    <div class="day-modal-text">${esc(data.think)}</div>
   </div>`;
 
   if (data.immersive) html += `<div class="day-modal-section">
     <div class="day-modal-section-title">沉浸写作</div>
-    <div class="day-modal-text">${data.immersive}</div>
+    <div class="day-modal-text">${esc(data.immersive)}</div>
   </div>`;
 
   if (!html) html = '<div style="color:var(--gray2);font-size:13px;">这天没有记录内容。</div>';
